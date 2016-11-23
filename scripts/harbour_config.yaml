@@ -1,0 +1,9 @@
+dataset:
+    path: "C:\\Users\\westwell\\Desktop\\Data" #"path to your dataset"
+    greyscale: 1 # 1 indicates use, 0 indicates NOT use
+    rescale: 0
+    factor: 0
+    crop: 0
+    region: 0
+    threshold: 0
+    hog: 1
