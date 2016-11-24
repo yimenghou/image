@@ -10,20 +10,18 @@ class genROI(object):
 
 	def __init__(self, roi):
 
-		dirpath = os.path.dirname(os.path.realpath(__file__))
-		self.baseDataPath = r'E:\dataset\rawDataset'
+		dirpath = r'E:\dataset'
+		self.baseDataPath = r'E:\dataset\harbourCanvasImage'
 		self.secondaryImg = 'image' # secondary directory that saves images
 		self.secondaryAno = 'annotation' # secondary directory that saves annotation
 
-		self.targetPath = os.path.join(dirpath, 'RegressionData')  
-
-		self.ds =  1 # specify it if the original is downsampled 
+		self.targetPath = os.path.join(dirpath, 'harbourRegressionData')  
 
 		mapDict = {0:"Letter", 1:"Number", 2:"LetNum"}
 
 		# change the size of image bound, each has 3 scales
 		boundSizeDict = {"Letter":[[150,40],[175,45],[200,50]],\
-						 "Number":[[200,40],[260,45],[320,50]],\
+						 "Number":[[200,40],[250,45],[300,50]],\
 						 "LetNum":[[150,40],[175,45],[200,50]] }
 
 		self.ROItype = roi
@@ -31,10 +29,9 @@ class genROI(object):
 
 	def getROI(self):
 		# generate positives
-		up_range = [0.1, 0.05]
+		up_range = [0.24, 0.12]
 		step_size = 2
 
-		n_tot = 0
 		n_newImg = 0
 		imageFileList = os.listdir(self.baseDataPath)
 
@@ -45,7 +42,6 @@ class genROI(object):
 			AnoDirPath = os.path.join(self.baseDataPath, name, self.secondaryAno)
 
 			for item in os.listdir(AnoDirPath):
-				n_tot += 1
 
 				imageName_item = item[:-4] + '.jpg'
 				imageName_item_save = item[:-4] + '.bmp'
@@ -54,79 +50,44 @@ class genROI(object):
 
 				matfile = scipy.io.loadmat(fullAnoName)
 				position = matfile['boxes'][self.ROItype]
-				position = position/self.ds
 
-				vArmLength = int(position[2]) - int(position[0])
-				hArmLength = int(position[3]) - int(position[1])
+				hArmLength = position[2] - position[0]
+				vArmLength = position[3] - position[1]
+				position_center = [(position[2]+position[0])/2, (position[3]+position[1])/2]
 
-				if  vArmLength > hArmLength:
-					# try only horizotal ROI
+				if  hArmLength > vArmLength:
 					continue
 
 				imageEntire = cv2.imread(fullImageName)
+				print fullImageName
 
-				if hArmLength < self.targetBoundSize[0][0]:
-					continue
-					padvTotal = self.targetBoundSize[0][0] - hArmLength
-					padLeft = padvTotal/2
-					padRight = padvTotal - padLeft
+				if vArmLength > self.targetBoundSize[2][0]:
 
-					padhTotal = self.targetBoundSize[0][1] - vArmLength
-					padTop = padhTotal/2
-					padBot = padhTotal - padTop
+					for i in range(4):
 
-					imageCrop = imageEntire[ int(position[1])-padLeft:int(position[3])+padRight, int(position[0])-padTop:int(position[2])+padBot, :]
-					if imageCrop.shape != (self.targetBoundSize[0][0], self.targetBoundSize[0][1], 3):
-						continue
+						x_delta = step_size*np.random.uniform(-hArmLength*up_range[1], hArmLength*up_range[1])
+						y_delta = step_size*np.random.uniform(-vArmLength*up_range[0], vArmLength*up_range[0])
 
-				if self.targetBoundSize[0][0] <= hArmLength <= self.targetBoundSize[1][0]:
-					continue
-					padvTotal = self.targetBoundSize[1][0] - hArmLength
-					padLeft = padvTotal/2
-					padRight = padvTotal - padLeft
+						img_shift = imageEntire[ int(position_center[1]-self.targetBoundSize[1][0]/2+y_delta) : int(position_center[1]+self.targetBoundSize[1][0]/2+y_delta), \
+												 int(position_center[0]-self.targetBoundSize[1][1]/2+x_delta) : int(position_center[0]+self.targetBoundSize[1][1]/2+x_delta) ]
 
-					padhTotal = self.targetBoundSize[1][1] - vArmLength
-					padTop = padhTotal/2
-					padBot = padhTotal - padTop
+						v_delta = vArmLength - self.targetBoundSize[1][0]
+						h_delta = hArmLength - self.targetBoundSize[1][1]
 
-					imageCrop = imageEntire[ int(position[1])-padLeft:int(position[3])+padRight, int(position[0])-padTop:int(position[2])+padBot, :]
-					if imageCrop.shape != (self.targetBoundSize[1][0], self.targetBoundSize[1][1], 3):
-						continue
+						fix_position = [y_delta, x_delta, v_delta, h_delta]
+						print fix_position
+						fix_position = np.array(fix_position, dtype='int')
+						mat_data = {"boxes": fix_position}
 
-				if self.targetBoundSize[1][0] < hArmLength:
+						saveName_img = os.path.join(self.targetPath, 'img', str(n_newImg)+'.jpg')
+						saveName_mat = os.path.join(self.targetPath, 'mat', str(n_newImg)+'.mat')
 
-					padvTotal = self.targetBoundSize[2][0] - hArmLength
-					padLeft = padvTotal/2
-					padRight = padvTotal - padLeft
-
-					padhTotal = self.targetBoundSize[2][1] - vArmLength
-					padTop = padhTotal/2
-					padBot = padhTotal - padTop
-
-					imageCrop = imageEntire[ int(position[1])-padLeft:int(position[3])+padRight, int(position[0])-padTop:int(position[2])+padBot, :]
-					if imageCrop.shape != (self.targetBoundSize[2][0], self.targetBoundSize[2][1], 3):
-						continue
-
-				fix_v_top  = step_size*np.random.randint(-vArmLength*up_range[0], vArmLength*up_range[0])
-				fix_v_bot  = step_size*np.random.randint(-vArmLength*up_range[0], vArmLength*up_range[0])
-				fix_h_left  = step_size*np.random.randint(-hArmLength*up_range[1], hArmLength*up_range[1])
-				fix_h_right = step_size*np.random.randint(-hArmLength*up_range[1], hArmLength*up_range[1])
-
-				img_shift = imageEntire[ int(position[1])-padLeft+fix_v_top:int(position[3])+padRight+fix_v_bot, \
-										 int(position[0])-padTop+fix_h_left:int(position[2])+padBot+fix_h_right, :]
-
-				fix_position = [fix_v_top, fix_v_bot, fix_h_left, fix_h_right]
-				fix_position = np.array(fix_position, dtype='int')
-				mat_data = {"boxes": fix_position}
-
-				saveName_img = os.path.join(self.targetPath, 'img', str(n_newImg)+'.jpg')
-				saveName_mat = os.path.join(self.targetPath, 'mat', str(n_newImg)+'.mat')
-				cv2.imwrite(saveName_img, img_shift)
-				scipy.io.savemat(saveName_mat, mat_data)
-
-				n_newImg += 1
-
-
+						try:
+							cv2.imwrite(saveName_img, img_shift)
+							scipy.io.savemat(saveName_mat, mat_data)
+							n_newImg += 1
+						except:
+							pass
 
 def boundFilter(rand_coor, original_coor, thresh = 0.5):
 
@@ -166,7 +127,5 @@ def boundFilter(rand_coor, original_coor, thresh = 0.5):
 
 if __name__ == '__main__':
 
-	for i in range(3):
-
-		ROI = genROI(i)
-		ROI.getROI()
+	ROI = genROI(1)
+	ROI.getROI()
