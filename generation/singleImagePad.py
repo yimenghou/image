@@ -27,7 +27,7 @@ class singleImagePad(object):
 
 			for sample in enumerate(os.listdir(classPath)):
 
-				print "current processing index: %d, totally %d"%(sample[0], N_sample)
+				print "current processing index: %d, totally %d from class: %s"%(sample[0], N_sample, class_item)
 				sampleLoadPath = os.path.join(classPath, sample[1])
 				sampleSavePath = os.path.join(self.targetDataPath, class_item, sample[1])
 				img = cv2.imread(sampleLoadPath)
@@ -35,12 +35,12 @@ class singleImagePad(object):
 				cv2.imwrite(sampleSavePath, img_out)
 
 	def process(self, img_in):
+
 		# since each image is not same size, the following will be done:
 		# 1. set a target image size, eg: 32*32
 		# 2. for every channel in the image, calculate the most possible pad value
 		# 3. resize the longest height/width into 32, resize the another by 32*resize_factor
 		# 4. pad the short arm with pad value, plus a random noise
-
 
 		base_arm = 32.0
 		img_out = np.ones((base_arm, base_arm, 3))
