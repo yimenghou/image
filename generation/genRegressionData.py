@@ -10,12 +10,11 @@ class genROI(object):
 
 	def __init__(self, roi):
 
-		dirpath = r'E:\dataset'
 		self.baseDataPath = r'E:\dataset\harbourCanvasImage'
 		self.secondaryImg = 'image' # secondary directory that saves images
 		self.secondaryAno = 'annotation' # secondary directory that saves annotation
 
-		self.targetPath = os.path.join(dirpath, 'harbourRegressionData')  
+		self.targetPath =r'E:\dataset\harbourRegressionData' 
 
 		mapDict = {0:"Letter", 1:"Number", 2:"LetNum"}
 
@@ -63,31 +62,42 @@ class genROI(object):
 
 				if vArmLength > self.targetBoundSize[2][0]:
 
-					for i in range(4):
+					n_success = 0
+					while(n_success <4):
 
 						x_delta = step_size*np.random.uniform(-hArmLength*up_range[1], hArmLength*up_range[1])
 						y_delta = step_size*np.random.uniform(-vArmLength*up_range[0], vArmLength*up_range[0])
 
-						img_shift = imageEntire[ int(position_center[1]-self.targetBoundSize[1][0]/2+y_delta) : int(position_center[1]+self.targetBoundSize[1][0]/2+y_delta), \
-												 int(position_center[0]-self.targetBoundSize[1][1]/2+x_delta) : int(position_center[0]+self.targetBoundSize[1][1]/2+x_delta) ]
+						area_overlay = (hArmLength-x_delta)*(vArmLength-y_delta)
+						if float(area_overlay)/(hArmLength*vArmLength) < 0.8:
+							continue
 
-						v_delta = vArmLength - self.targetBoundSize[1][0]
-						h_delta = hArmLength - self.targetBoundSize[1][1]
+						img_shift = imageEntire[ int(position_center[1]-self.targetBoundSize[1][0]/2+y_delta) : \
+												 int(position_center[1]+self.targetBoundSize[1][0]/2+y_delta) , \
+												 int(position_center[0]-self.targetBoundSize[1][1]/2+x_delta) : \
+												 int(position_center[0]+self.targetBoundSize[1][1]/2+x_delta) ]
 
-						fix_position = [y_delta, x_delta, v_delta, h_delta]
+						v_delta = (vArmLength - self.targetBoundSize[1][0])/self.targetBoundSize[1][0]
+						h_delta = (hArmLength - self.targetBoundSize[1][1])/self.targetBoundSize[1][1]
+
+						fix_position = [y_delta/self.targetBoundSize[2][0], x_delta/self.targetBoundSize[2][1], v_delta, h_delta]
 						print fix_position
-						fix_position = np.array(fix_position, dtype='int')
+						fix_position = np.array(fix_position, dtype='float')
 						mat_data = {"boxes": fix_position}
 
-						saveName_img = os.path.join(self.targetPath, 'img', str(n_newImg)+'.jpg')
+						saveName_img = os.path.join(self.targetPath, 'img', str(n_newImg)+'.bmp')
 						saveName_mat = os.path.join(self.targetPath, 'mat', str(n_newImg)+'.mat')
 
 						try:
 							cv2.imwrite(saveName_img, img_shift)
 							scipy.io.savemat(saveName_mat, mat_data)
 							n_newImg += 1
+							n_success += 1
+							print "!"
 						except:
 							pass
+
+
 
 def boundFilter(rand_coor, original_coor, thresh = 0.5):
 
