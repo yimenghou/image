@@ -26,6 +26,12 @@ class genROI(object):
 		self.ROItype = roi
 		self.targetBoundSize = 	boundSizeDict[mapDict[self.ROItype]]
 
+		try:
+			os.mkdir(os.path.join(self.targetPath, 'img'))
+			os.mkdir(os.path.join(self.targetPath, 'mat'))
+		except:
+			pass
+
 	def getROI(self):
 		# generate positives
 		up_range = [0.24, 0.12]
@@ -63,7 +69,7 @@ class genROI(object):
 				if vArmLength > self.targetBoundSize[2][0]:
 
 					n_success = 0
-					while(n_success <4):
+					while(n_success <2000):
 
 						x_delta = step_size*np.random.uniform(-hArmLength*up_range[1], hArmLength*up_range[1])
 						y_delta = step_size*np.random.uniform(-vArmLength*up_range[0], vArmLength*up_range[0])
@@ -77,10 +83,10 @@ class genROI(object):
 												 int(position_center[0]-self.targetBoundSize[1][1]/2+x_delta) : \
 												 int(position_center[0]+self.targetBoundSize[1][1]/2+x_delta) ]
 
-						v_delta = (vArmLength - self.targetBoundSize[1][0])/self.targetBoundSize[1][0]
-						h_delta = (hArmLength - self.targetBoundSize[1][1])/self.targetBoundSize[1][1]
+						v_delta = vArmLength - self.targetBoundSize[1][0]
+						h_delta = hArmLength - self.targetBoundSize[1][1]
 
-						fix_position = [y_delta/self.targetBoundSize[2][0], x_delta/self.targetBoundSize[2][1], v_delta, h_delta]
+						fix_position = [y_delta, x_delta, v_delta, h_delta, position[0], position[1], position[2], position[3]]
 						print fix_position
 						fix_position = np.array(fix_position, dtype='float')
 						mat_data = {"boxes": fix_position}
@@ -97,7 +103,8 @@ class genROI(object):
 						except:
 							pass
 
-
+				break
+			break	 
 
 def boundFilter(rand_coor, original_coor, thresh = 0.5):
 
