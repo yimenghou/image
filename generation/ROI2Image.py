@@ -1,3 +1,4 @@
+
 import scipy.io
 import cv2, os
 import numpy as np
@@ -12,7 +13,6 @@ class ROI2Image(object):
         self.basePath = r"E:\dataset\ST\data"
         self.imgPath = os.path.join(self.basePath, "JPEGImages")
         self.xmlPath = os.path.join(self.basePath, "Annotations")
-
         self.savePath = r"C:\Users\westwell\Desktop\xmlImage"
 
         self.mapDict = {'one':1, "two":2, "three":3, "four":4, "five":5, "six":6, "seven":7, "eight":8, "nine":9, "zero":0}
@@ -31,15 +31,20 @@ class ROI2Image(object):
 
             img = cv2.imread( os.path.join(self.imgPath, idx+".bmp") )
             xml = self._readxml( os.path.join(self.xmlPath, item) )
-            print xml
+
+            if img.shape[0]< img.shape[1]:
+                continue
 
             img_stack = self._segmentROI(img)
 
-            for i in range(len(img_stack)):
-                ImgSavePath = os.path.join(self.savePath, str(xml[i]), str(classNum[xml[i]])+'.bmp')
-                classNum[xml[i]] += 1
-                print ImgSavePath
-                cv2.imwrite(ImgSavePath, img_stack[i])
+            try:
+                for i in range(len(img_stack)):
+                    ImgSavePath = os.path.join(self.savePath, str(xml[i]), str(classNum[xml[i]])+'.bmp')
+                    classNum[xml[i]] += 1
+                    print ImgSavePath
+                    cv2.imwrite(ImgSavePath, img_stack[i])
+            except:
+                continue
 
     def _readxml(self, input_xml_file_path):
 
@@ -66,30 +71,25 @@ class ROI2Image(object):
         segs = rowmax.flatten() < 0
         segs = scipy.signal.convolve(segs, [1,1,1], mode='same')
 
-        beginning, ending = [0], []
+        beginning, ending = [], []
         img_lst = []
 
         for i in range(1, len(segs)-1):
             if segs[i-1] != 0 and segs[i] == 0:
-                ending.append(i)
-            elif segs[i] == 0 and segs[i+1] != 0:
                 beginning.append(i)
+            elif segs[i] == 0 and segs[i+1] != 0:
+                ending.append(i)
             else:
                 pass
 
         if frag_direction == 1:
 
-            for i in range(len(ending)):
-                plt.figure()
-                plt.imshow(input_roi[beginning[i]:ending[i],:])
-                plt.show()
-                img_lst.append( input_roi[beginning[i]:ending[i],:] )    
-        else:
+            for i in range(min(len(ending), len(beginning))):
+                img_lst.append( input_roi[beginning[i]:ending[i],:] )   
 
-            for i in range(len(ending)):
-                plt.figure()
-                plt.imshow(input_roi[beginning[i]:ending[i],:])
-                plt.show()
+        elif frag_direction == 0:
+
+            for i in range(min(len(ending), len(beginning)) ):
                 img_lst.append( input_roi[:,beginning[i]:ending[i]] )                
 
         return img_lst
