@@ -14,7 +14,6 @@ class ROI2Image(object):
         self.imgPath = os.path.join(self.basePath, "JPEGImages")
         self.xmlPath = os.path.join(self.basePath, "Annotations")
         self.savePath = r"C:\Users\westwell\Desktop\xmlImage"
-
         self.mapDict = {'one':1, "two":2, "three":3, "four":4, "five":5, "six":6, "seven":7, "eight":8, "nine":9, "zero":0}
 
         try:
@@ -32,7 +31,9 @@ class ROI2Image(object):
             img = cv2.imread( os.path.join(self.imgPath, idx+".bmp") )
             xml = self._readxml( os.path.join(self.xmlPath, item) )
 
-            if img.shape[0]< img.shape[1]:
+            if img == None:
+                continue
+            elif img.shape[0]< img.shape[1]:
                 continue
 
             img_stack = self._segmentROI(img)

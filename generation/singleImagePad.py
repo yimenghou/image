@@ -8,12 +8,12 @@ class singleImagePad(object):
 	def __init__(self):
 
 		self.sourceDataPath = r"E:\dataset\harbourSingleImage"
-		self.targetDataPath = r"E:\dataset\harbourSingleImagePad"
-		self.classNum = 10
+		self.targetDataPath = r"E:\dataset\harbourSingleImagePadNew"
+		self.classNum = 36
 
 		try:
-			for i in range(self.classNum):
-				subDirName = os.path.join(self.targetDataPath, str(i))
+			for item in os.listdir(self.sourceDataPath):
+				subDirName = os.path.join(self.targetDataPath, item)
 				os.mkdir(subDirName)
 		except:
 			pass
@@ -53,9 +53,9 @@ class singleImagePad(object):
 			sort_hist_val = np.sort(hist_val)
 			argsort_hist_val = np.argsort(hist_val)
 
-			if 8<=argsort_hist_val[-1]<=10 :
+			if 7<=argsort_hist_val[-1]<=9 :
 				pad_val = sort_hist_val[-2]
-			elif 8<=argsort_hist_val[-2]<=10:
+			elif 7<=argsort_hist_val[-2]<=9:
 				pad_val = sort_hist_val[-1]
 			elif 0<=argsort_hist_val[-1]<=2 :
 				pad_val = sort_hist_val[-2]
