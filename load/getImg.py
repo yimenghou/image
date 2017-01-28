@@ -1,11 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Apr 12 16:35:23 2016
-
-@author: ThinkPad
-"""
-
-
 
 import numpy as np
 import cv2
@@ -35,7 +27,6 @@ class getImg(object):
             self.CIFAR10Handler()
         else:
             raise Exception("Unexpected datasets")
-
 
     def MNISTHandler(self):       
         print ">>> Loading MNIST in progress ..."
@@ -250,3 +241,8 @@ def normalizer(input_data):
     data_max = input_data.max()
     output_data = np.uint8(input_data/data_max*255)
     return output_data
+
+
+
+
+    
