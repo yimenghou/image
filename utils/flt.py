@@ -2,8 +2,9 @@
 """
 Created on Fri Apr 01 16:12:26 2016
 
-@author: ThinkPad
+@author: yimeng
 """
+
 import numpy as np
 from numpy import ones, zeros, ceil, array
 from preprocessing import zeropadding

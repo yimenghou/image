@@ -5,10 +5,10 @@ import scipy
 
 class singleImagePad(object):
 
-	def __init__(self):
+	def __init__(self, sourceDataPath, targetDataPath):
 
-		self.sourceDataPath = r"E:\dataset\harbourSingleImage"
-		self.targetDataPath = r"E:\dataset\harbourSingleImagePadNew"
+		self.sourceDataPath = sourceDataPath
+		self.targetDataPath = targetDataPath
 		self.classNum = 36
 
 		try:

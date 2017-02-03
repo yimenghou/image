@@ -2,15 +2,11 @@
 """
 Created on Tue Apr 12 16:35:23 2016
 
-@author: ThinkPad
+@author: yimeng
 """
 
-
-
 import numpy as np
-import cv2
-import os
-import cPickle
+import cv2, os, cPickle
 from mnist import mnist
 
 
@@ -24,13 +20,7 @@ class getImg(object):
         
         if not os.path.exists(self._basePath):
             raise IOError("Path: %s to specified dataset does not exist"%(self._basePath))
-            
-        if self.config['hog']:
-            if self.config['type'] == 'CIFAR'  :          
-                self.hog_instance = cv2.HOGDescriptor((32,32), (8,8), (4,4), (2,2), 9)
-            else:
-                self.hog_instance = cv2.HOGDescriptor((28,28), (8,8), (4,4), (4,4), 9)
-        
+                    
         if self.datasetType == "MNIST":
             self.MNISTHandler()
         elif self.datasetType == 'CONTAINER':
@@ -48,10 +38,7 @@ class getImg(object):
         # MNIST dataset has 70,000 examples in total
         print ">>> Loading MNIST in progress ..."
         
-        if self.config["hog"]:
-            self.dataset = np.zeros((70000, 1296))
-        else:
-            self.dataset = np.zeros((70000, 784))
+        self.dataset = np.zeros((70000, 784))
         self.labelset = np.zeros((70000, 10), dtype=np.int)        
         
         MNISTtr = mnist("train")
@@ -75,7 +62,7 @@ class getImg(object):
             label_temp[_label] = 1
             self.labelset[i,:] = label_temp        
 
-    def CIFAR10Handler(self):
+    def CIFAR10Handler(self, basepath):
         # cifar-10 has 60000 examples in total
         print ">>> Loading CIFAR-10 in progress ..."      
         
@@ -85,21 +72,21 @@ class getImg(object):
             self.dataset = np.zeros((60000, 3072))
             
         self.labelset = np.zeros((60000, 10), dtype=np.int)  
-               
-        path1 = "E:\\dataset\\cifar10\\cifar-10-batches-py\\data_batch_1"
-        path2 = "E:\\dataset\\cifar10\\cifar-10-batches-py\\data_batch_2"
-        path3 = "E:\\dataset\\cifar10\\cifar-10-batches-py\\data_batch_3"
-        path4 = "E:\\dataset\\cifar10\\cifar-10-batches-py\\data_batch_4"
-        path5 = "E:\\dataset\\cifar10\\cifar-10-batches-py\\data_batch_5"
-        path6 = "E:\\dataset\\cifar10\\cifar-10-batches-py\\test_batch"
+
+        path1 = "data_batch_1"
+        path2 = "data_batch_2"
+        path3 = "data_batch_3"
+        path4 = "data_batch_4"
+        path5 = "data_batch_5"
+        path6 = "test_batch"
         
         try:
-            data_dict1 = self.unpickle(path1)
-            data_dict2 = self.unpickle(path2)
-            data_dict3 = self.unpickle(path3)
-            data_dict4 = self.unpickle(path4)
-            data_dict5 = self.unpickle(path5)
-            data_dict6 = self.unpickle(path6)
+            data_dict1 = self.unpickle(os.path.join(basepath, path1))
+            data_dict2 = self.unpickle(os.path.join(basepath, path2))
+            data_dict3 = self.unpickle(os.path.join(basepath, path3))
+            data_dict4 = self.unpickle(os.path.join(basepath, path4))
+            data_dict5 = self.unpickle(os.path.join(basepath, path5))
+            data_dict6 = self.unpickle(os.path.join(basepath, path6))
         except IOError:
             print "Path: %s to CIFAR data does not exist"%path1[:-12]
         
@@ -158,10 +145,6 @@ class getImg(object):
                     _img = cv2.imread(_classPath+sample)
                 except:
                     continue
-                
-                if self.config["type"] == "MNIST" or self.config["type"] == "CONTAINER":
-                    if _img.size% 784 != 0:
-                        continue
 
                 _img_processed = self.IMG_prep_handler(_img) 
                 
@@ -183,10 +166,12 @@ class getImg(object):
 
         data_con = np.hstack((database1, labelbase))
         
+        # shuffle dataset
         np.random.shuffle(data_con)
         self.dataset = data_con[:, :database1.shape[1]]
         self.labelset = data_con[:, database1.shape[1]:]     
         
+        # shuffle dataset
         numSum = self.dataset.shape[0]        
         shuffle_idx = np.random.permutation(numSum)
         self.dataset = self.dataset[shuffle_idx]
@@ -194,12 +179,8 @@ class getImg(object):
         
     def IMG_prep_handler(self, _prep_img):
         # apply preprocessing to each example
+        img_height, img_width, _ = _prep_img.shape
         _prep_img = np.uint8(_prep_img)
-        
-        if self.config["type"] == 'MNIST' or self.config["type"] == 'CONTAINTER':
-            feature_arm = 28
-        else:
-            feature_arm = 32
         
         if self.config["greyscale"]:
             _prep_img = cv2.cvtColor( _prep_img, cv2.COLOR_RGB2GRAY )
@@ -207,27 +188,12 @@ class getImg(object):
             _prep_img = cv2.resize( _prep_img, (0,0), fx=self.config["factor"], fy=self.config["factor"])
         elif self.config["crop"]:
             _crop_rg = self.config["region"]
-            _prep_img = _prep_img[int(feature_arm*_crop_rg[2]):int(feature_arm*_crop_rg[3]), int(feature_arm*_crop_rg[0]):int(feature_arm*_crop_rg[1])]
+            _prep_img = _prep_img[int(img_height*_crop_rg[2]):int(img_height*_crop_rg[3]), int(img_width*_crop_rg[0]):int(img_width*_crop_rg[1])]
         elif self.config["threshold"]:
             threshold_temp = cv2.threshold(_prep_img, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
             _prep_img = threshold_temp[1].flatten()
         else:
             _prep_img = _prep_img
-            
-        if self.config["hog"]:
-            
-            if len(_prep_img.shape) == 1:
-                if self.config['type'] == 'CIFAR' and self.config['greyscale'] == 0:
-                    _prep_img_out = self.hog_instance.compute( np.reshape(_prep_img, (feature_arm, feature_arm, 3)) )
-                else:
-                    _prep_img_out = self.hog_instance.compute( np.reshape(_prep_img, (feature_arm, feature_arm)) )
-            else:
-                if self.config['type'] == 'CIFAR' and self.config['greyscale'] == 0:
-                    _prep_img_out = self.hog_instance.compute( _prep_img )
-                else:
-                    _prep_img_out = self.hog_instance.compute( _prep_img )
-        else:
-            _prep_img_out = _prep_img
         
         return _prep_img_out
         

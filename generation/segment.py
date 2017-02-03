@@ -12,7 +12,7 @@ from scipy.signal import argrelextrema
 
 
 # read image
-imgPath = r"E:\dataset\harbourROIImage\positive\Number-320-50\00002.bmp"
+imgPath = ""
 img = misc.imread(imgPath)
 # make greyscale
 greyimg = img.mean(axis=2).astype(uint8)

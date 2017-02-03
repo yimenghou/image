@@ -18,11 +18,7 @@ class genROI(object):
         self.secondaryAno = 'annotation' #"ThreeRegions\\annotation"
 
         mapDict = {0:"Letter", 1:"Number", 2:"LetNum"}
-        '''
-        boundSizeDict = {"Letter":[[150,40],[175,45],[200,50]],\
-                         "Number":[[200,40],[260,45],[320,50]],\
-                         "LetNum":[[150,40],[175,45],[200,50]] }
-        '''
+
         boundSizeDict = {"Letter":[[64,28],[160,36],[200,48]],\
                          "Number":[[200,30],[280,40],[320,50]],\
                          "LetNum":[[112,28],[160,36],[200,48]] }
@@ -43,8 +39,8 @@ class genROI(object):
                                 os.path.join(self.targetPath, 'negative', repositoryName[2])]
 
         try:
-            #for i in range(3):
-                #os.mkdir(self.PositiveSaveDir[i])
+            for i in range(3):
+                os.mkdir(self.PositiveSaveDir[i])
             for j in range(3):
                 os.mkdir(self.NegativeSaveDir[j])
         except:
@@ -182,13 +178,7 @@ class genROI(object):
 
                         topLeftCor = [np.random.randint(0, imageEntire.shape[0]-self.targetBoundSize[scale][0]), np.random.randint(0, imageEntire.shape[1]-self.targetBoundSize[scale][1]) ]
                         botRightCor = [ topLeftCor[0]+self.targetBoundSize[scale][0], topLeftCor[1]+self.targetBoundSize[scale][1] ]
-
-                        # Dist2bound = np.zeros((3,4))
-                        # for i in range(3):
-                        #     for j in range(4):
-                        #         Dist2bound[i,j] = allPosition[i][j]
-                        # # Dist2bound = [ abs() ] 
-
+                        
                         if topLeftCor[0] <= position[0] <= botRightCor[0] or topLeftCor[0] <= position[1] <= botRightCor[0] \
                             or topLeftCor[0] <= position[2] <= botRightCor[0] or topLeftCor[0] <= position[3] <= botRightCor[0]:
                             pass
@@ -207,13 +197,7 @@ class genROI(object):
                             n_success += 1
 
 if __name__ == '__main__':
-    '''
-    for i in range(3):
-
-        ROI = genROI(i)
-        ROI.getROI()
-        #ROI.getNeg()
-    '''
+    
     ROI = genROI(1)
     #ROI.getROI()
     ROI.getNeg()

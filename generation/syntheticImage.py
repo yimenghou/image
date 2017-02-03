@@ -1,7 +1,8 @@
 
 from loadImg import *
 
-class MakeImage(object):
+class SyntheticImage(object):
+	# generate synthetic images
 
 	def __init__(self):
 

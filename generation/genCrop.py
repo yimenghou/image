@@ -1,24 +1,14 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Thu Apr 14 17:08:07 2016
 
-@author: ThinkPad
-"""
-
-import cv2
-import os
+import cv2, math, os, pickle
 from numpy import zeros, array, random, reshape, arange
-from ELM.zeropadding import zeropadding
-import math
-import pickle
 
 class genMNIST(object):
     
     def __init__(self):
         
         self.inputsize = 28
-        self.halfsize = self.inputsize/2        
-        self.numImage = 3000    
+        self.halfsize = self.inputsize/2           
         self.dataset = zeros((self.numSum, self.inputsize**2))
         self.labels = zeros((self.numSum, self.numLabel))
         self.itemlist = arange(0,34)
@@ -26,12 +16,12 @@ class genMNIST(object):
         self.make11Data()
 
     def loadData(self):
-        
+
+        path = 'C:\\dataspace\\IMGdata\\'+self.folder+'\\'+str(i)+'\\'
         print ">>> Loading Data<<<"    
         database0 = []
         labelbase0 = []
         for i in self.itemlist:
-            path = 'C:\\dataspace\\IMGdata\\'+self.folder+'\\'+str(i)+'\\'
             dirs = os.listdir(path)
             for item in dirs:                 
                 img = cv2.imread(path+item,0)
@@ -107,6 +97,7 @@ class genMNIST(object):
         return dataset_none1
         
     def lineIMAGE(self, numDigits = 100, edgesize = 0):
+    	# generate lane of mnist data
         
         num_row = int((numDigits-1)/10)+1         
         rowpixel = num_row*self.inputsize+ (num_row-1)*edgesize

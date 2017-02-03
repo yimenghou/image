@@ -6,8 +6,7 @@ Created on Tue Apr 12 16:35:23 2016
 """
 
 import numpy as np
-import cv2
-import os
+import cv2, os
 
 class getImg(object):
     
@@ -48,10 +47,7 @@ class getImg(object):
                 if _sample_count%1000 == 0:
                     print "> current loading index: "+str(_sample_count) 
             
-                _img = cv2.imread(os.path.join(_classPath, sample))
-
-                if _img.size%784 != 0:
-                    continue   
+                _img = cv2.imread(os.path.join(_classPath, sample))   
 
                 _img_processed = self.IMG_prep_handler(_img)                
                 database0.append( _img_processed.flatten() )
@@ -98,16 +94,16 @@ class getImg(object):
         
         return _prep_img
 
-    def hog_computer(self):
-        # Note: this part only support data with feature dimension of 28*28 = 784
+    # def hog_computer(self):
+    #     # Note: this part only support data with feature dimension of 28*28 = 784
         
-        N_num = self.dataset.shape[0]       
-        hog_dataset = np.zeros((N_num, 1296))          
+    #     N_num = self.dataset.shape[0]       
+    #     hog_dataset = np.zeros((N_num, 1296))          
         
-        self.dataset = np.uint8(self.dataset)
-        self.hog_instance = cv2.HOGDescriptor((28,28), (8,8), (4,4), (4,4), 9)
-        for i in range(N_num):
-            hog_dataset[i,:] = self.hog_instance.compute( np.reshape(self.dataset[i,:],(28,28) )).flatten()
+    #     self.dataset = np.uint8(self.dataset)
+    #     self.hog_instance = cv2.HOGDescriptor((28,28), (8,8), (4,4), (4,4), 9)
+    #     for i in range(N_num):
+    #         hog_dataset[i,:] = self.hog_instance.compute( np.reshape(self.dataset[i,:],(28,28) )).flatten()
         
-        return hog_dataset          
+    #     return hog_dataset          
         
