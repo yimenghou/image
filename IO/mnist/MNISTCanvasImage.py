@@ -1,3 +1,8 @@
+
+'''
+Generates image canvases with NIST digits randomly placed in a canvas
+'''
+
 from os.path import exists
 from numpy import zeros, any, bitwise_or, array, reshape
 from random import randint
@@ -6,7 +11,7 @@ import pickle
 
 
 class MNISTCanvasImage(object):
-    """ Generates image canvases with NIST digits randomly placed in a canvas"""
+
     _dataset = None
     _canvasSize = [800,600]
     _canvas = None

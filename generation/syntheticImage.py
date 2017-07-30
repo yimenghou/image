@@ -1,13 +1,14 @@
 
 from loadImg import *
 
+"""
+generate synthetic images by adding noise, rotation, etc.
+"""
+
 class SyntheticImage(object):
-	# generate synthetic images
 
-	def __init__(self):
 
-		imagePath = r"C:\Users\westwell\Desktop\mycalligraphy\copy1"
-		sel_class = [i for i in range(10)]
+	def __init__(self, imagePath, sel_class = [i for i in range(10)]):
 
 		baseImage = loadImg(imagePath, sel_class)
 		self.dataset_base = baseImage.content

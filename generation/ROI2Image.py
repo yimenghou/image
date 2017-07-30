@@ -1,4 +1,10 @@
 
+
+"""
+Segment ROI images which contains numbers/letters into seprate ones
+"""
+
+
 import scipy.io
 import cv2, os
 import numpy as np

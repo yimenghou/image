@@ -1,10 +1,14 @@
+
+'''
+# generate positive and negative ROI examples
+'''
+
 import scipy.io 
 import os, cv2
 import numpy as np
 import matplotlib.pylab as plt
 from scipy import signal
 
-# generate positive and negative ROI examples
 class genROI(object):
 
     def __init__(self, roi):

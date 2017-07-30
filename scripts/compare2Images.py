@@ -9,8 +9,8 @@ import cv2
 from numpy import zeros, array
 import matplotlib.pylab as plt
 
-path_pitch = 'C:\\dataspace\\comparison\\pitches\\'
-path_can = 'C:\\dataspace\\comparison\\canvas\\1.Bmp'
+path_pitch = ""
+path_can = ""
 
 dirs_pitch = os.listdir(path_pitch)
 canvas = cv2.imread(path_can, 0)

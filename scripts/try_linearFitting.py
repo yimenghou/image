@@ -13,10 +13,7 @@ dataset = numpy.loadtxt('pred')
 x = dataset[1,:]
 y = dataset[0,:]
 
-
 params = curve_fit(fit_func, x, y)
-
-
 
 [a, b] = params[0]
 

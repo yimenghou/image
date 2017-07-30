@@ -1,4 +1,8 @@
 
+"""
+pad the images of non-uniform size into uniform ones
+"""
+
 import numpy as np
 import os, cv2
 import scipy

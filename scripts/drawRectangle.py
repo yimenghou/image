@@ -2,12 +2,11 @@ import os
 import cv2
 import scipy.io
 
-path = 'C:\\Users\\westwell\\Desktop\\make\\rawDataset\\1'
+path = ""
+savepath = ""
 
 anopath = os.path.join(path, "annotation")
 imgpath = os.path.join(path, "image")
-
-savepath = "C:\\Users\\westwell\\Desktop\\cv2"
 
 for item in os.listdir(anopath):
 

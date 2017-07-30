@@ -31,7 +31,6 @@ for i in enumerate(prop_list):
 
 	descriptor_val[i[0]*20:(i[0]+1)*20] = np.hstack((temp))
 
-
 print np.hstack((np.array(rgb_val), np.array(hsv_val), hist_val, descriptor_val) )
 
 

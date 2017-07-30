@@ -2,7 +2,7 @@
 """
 Created on Thu May 05 12:29:57 2016
 
-@author: ThinkPad
+@author: Yimeng
 """
 
 import cv2

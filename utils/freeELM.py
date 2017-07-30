@@ -39,7 +39,7 @@ import time
 from ELM.MNISTDataset import MNISTDataset
 from numpy import zeros, reshape, array
 from segImage import segImage
-from distCal import distCal
+from calculateDistance import distCal
 
 
 def accumulateSum(inputarray, num):

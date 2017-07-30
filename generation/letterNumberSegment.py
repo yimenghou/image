@@ -2,7 +2,7 @@
 """
 Created on Thu Nov 17 21:48:26 2016
 
-@author: Andre
+@author: Yimeng
 """
 
 from pylab import *
@@ -54,19 +54,3 @@ subplot(gs[1])
 plot(segs)
 show()
 
-# imgPath2 = r"C:\ningboDataset\1_ating\ThreeRegions\image\00046.jpg"
-# img = misc.imread(imgPath2)
-# greyimg = img.mean(axis=2).astype(uint8)
-# roi = greyimg[200:700,1460:1510]
-# rowmax = roi.max(axis=1)-roi.max(axis=1).mean()
-# segs = rowmax<0
-# segs = convolve(segs, [1,1,1], mode = 'same') 
-# roi[segs] = 0
-
-# figure(1)
-# gs = gridspec.GridSpec(2, 1, height_ratios=[1, 3]) 
-# subplot(gs[0])
-# imshow(flipud(roi.T))
-# subplot(gs[1])
-# plot(segs)
-# show()
