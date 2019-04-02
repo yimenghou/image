@@ -6,8 +6,6 @@ supported in order to provide learning and recall capabilities.
 
 """
 
-112233
-
 class AbstractNetwork(object):
     """ An instance of an ELM-based Neural Network """
 
